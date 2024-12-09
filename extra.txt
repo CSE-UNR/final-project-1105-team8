@@ -1,0 +1,55 @@
+	fclose(finput);
+	finput = fopen(INPUT_FILE, "r");
+	
+	processTemplateVerb(finput, foutput, counterVerb, verb);
+	
+	fclose(finput);
+	finput = fopen(INPUT_FILE, "r");
+	
+	processTemplateAdj(finput, foutput, counterAdj, adjective);
+	
+	void processTemplateVerb(FILE* fin, FILE* fout, int counterVerb, char verb[2][LETTERS]);
+void processTemplateAdj(FILE* fin, FILE* fout, int counterAdj, char adjective[3][LETTERS]);
+
+
+void processTemplateVerb(FILE* fin, FILE* fout, int counterVerb, char verb[2][LETTERS]){
+	char line[LETTERS];
+	int lineIndex = 0, i;
+	
+	while(fgets(line, LETTERS, fin)){
+		for(i=0;i<LETTERS && line[i] != '\0'; i++){
+			if(line[i] == 'V'){
+				fputs(verb[lineIndex], fout);
+				lineIndex++;
+				
+				if(lineIndex >= counterVerb){
+					lineIndex = 0;
+				}
+			}
+			else{
+				fputc(line[i], fout);
+			}
+		}
+	}
+}
+
+void processTemplateAdj(FILE* fin, FILE* fout, int counterAdj, char adjective[3][LETTERS]){
+	char line[LETTERS];
+	int lineIndex = 0, i;
+	
+	while(fgets(line, LETTERS, fin)){
+		for(i=0;i<LETTERS && line[i] != '\0'; i++){
+			if(line[i] == 'A'){
+				fputs(adjective[lineIndex], fout);
+				lineIndex++;
+				
+				if(lineIndex >= counterAdj){
+					lineIndex = 0;
+				}
+			}
+			else{
+				fputc(line[i], fout);
+			}
+		}
+	}
+}

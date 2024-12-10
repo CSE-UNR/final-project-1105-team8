@@ -8,25 +8,31 @@
 
 #include <stdio.h>
 #define LETTERS 20
-#define INPUT_FILE "story1.txt"
+#define COUNT 10
+#define INPUT_FILE "madlib1.txt"
 #define OUTPUT_FILE "outputstory.txt"
 
-void words(int counterNoun, int counterAdj, int counterVerb, char noun[5][LETTERS], char adjective[3][LETTERS], char verb[2][LETTERS]);
-void processTemplate(FILE* fin, FILE* fout, int counterNoun, char noun[5][LETTERS], int counterVerb, char verb[2][LETTERS], int counterAdj, char adjective[3][LETTERS]);
+void words(int *counterNoun, int *counterAdj, int *counterVerb, char noun[COUNT][LETTERS], char adjective[COUNT][LETTERS], char verb[COUNT][LETTERS]);
+void processTemplate(FILE* fin, FILE* fout, int counterNoun, char noun[COUNT][LETTERS], int counterVerb, char verb[COUNT][LETTERS], int counterAdj, char adjective[COUNT][LETTERS]);
 void printFinalStory(FILE* output);
+void input(int checks, char letters[COUNT][LETTERS]);
 
 int main(){
 
+
+//set our counters equal to what we're finding GOAL
 	FILE *finput, *foutput;
-	int counterNoun=5, counterVerb=2, counterAdj=3;
-	char adjective[3][LETTERS], noun[5][LETTERS], verb[2][LETTERS], userName[20];
+	int checks=0, counterNoun=0, counterVerb=0, counterAdj=0;
+	char letters[COUNT][LETTERS], adjective[COUNT][LETTERS], noun[COUNT][LETTERS], verb[COUNT][LETTERS], userName[20];
 	
 	printf("Please enter your name:\n");
 	scanf("%s", &userName);
 	
 	printf("Hello %s, welcome to the mini madlibs game!\n\n", userName);
-
-	words(counterNoun, counterAdj, counterVerb, noun, adjective, verb);
+	
+	input(checks, letters);
+	
+	words(&counterNoun, &counterAdj, &counterVerb, noun, adjective, verb);
 	
 	finput = fopen(INPUT_FILE, "r");
 	if(finput == NULL){
@@ -39,6 +45,10 @@ int main(){
 		printf("Could not open output\n");
 		return 1;
 	}
+	
+	//counterNoun++;
+	
+	
 	
 	processTemplate(finput, foutput, counterNoun, noun, counterVerb, verb, counterAdj, adjective);
 
@@ -59,54 +69,79 @@ int main(){
 	return 0;
 }
 
-void words(int counterNoun, int counterAdj, int counterVerb, char noun[5][LETTERS], char adjective[3][LETTERS], char verb[2][LETTERS]){
+void words(int *counterNoun, int *counterAdj, int *counterVerb, char noun[COUNT][LETTERS], char adjective[COUNT][LETTERS], char verb[COUNT][LETTERS]){
 	int i;
-	for(i=0;i< counterNoun; i++){
+	for(i=0;i< *counterNoun; i++){
 		printf("\nEnter noun: %d \n", i+1);
 		scanf("%s", noun[i]);
 	}
-	for(i=0; i< counterAdj; i++){
+	for(i=0; i< *counterAdj; i++){
 		printf("\nEnter adjective: %d \n", i+1);
 		scanf("%s", adjective[i]);
 	}
-	for(i=0; i< counterVerb; i++){
+	for(i=0; i< *counterVerb; i++){
 		printf("\nEnter verb: %d \n", i+1);
 		scanf("%s", verb[i]);
 	}
 }
 
-void processTemplate(FILE* fin, FILE* fout, int counterNoun, char noun[5][LETTERS], int counterVerb, char verb[2][LETTERS], int counterAdj, char adjective[3][LETTERS]){
+void input(int checks, char letters[][LETTERS]){
+	char detect;
+
+	for(int i=0; i+1< checks; i++){
+
+		detect = letters[COUNT][LETTERS];
+		
+		if(detect == 'A'){
+			printf("Enter in an adjective: ");
+		}
+		else if(detect == 'N'){
+		counterNoun++;
+			printf("Enter in a noun: ");
+		}
+		else if (detect == 'V'){
+			printf("Enter in a verb: ");
+		}
+	}
+}
+
+void processTemplate(FILE* fin, FILE* fout, int counterNoun, char noun[COUNT][LETTERS], int counterVerb, char verb[COUNT][LETTERS], int counterAdj, char adjective[COUNT][LETTERS]){
 	char line[LETTERS];
 	int nounIndex = 0, verbIndex = 0, adjIndex = 0, i;
 	
 	while(fgets(line, LETTERS, fin)){
 		for(i=0;i<LETTERS && line[i] != '\0'; i++){
-			if(line[i] == 'N'){
-				fputs(noun[nounIndex], fout);
-				nounIndex++;
-				
-				if(nounIndex >= counterNoun){
-					nounIndex = 0;
-				}
-			}
-			else if(line[i] == 'V'){
-				fputs(verb[verbIndex], fout);
-				verbIndex++;
-				
-				if(verbIndex >= counterVerb){
-					verbIndex = 0;
-				}
-			}
-			else if(line[i] == 'A'){
-				fputs(adjective[adjIndex], fout);
-				adjIndex++;
-				
-				if(adjIndex >= counterAdj){
-					adjIndex = 0;
-				}
-			}
-			else{
-				fputc(line[i], fout);
+			switch(line[i]){
+				case 'N':
+					
+					fputs(noun[nounIndex], fout);
+					nounIndex++;
+					
+					if(nounIndex >= counterNoun){
+						
+						nounIndex = 0;
+						
+					}
+					break;
+				case 'V':
+					fputs(verb[verbIndex], fout);
+					verbIndex++;
+					
+					if(verbIndex >= counterVerb){
+						verbIndex = 0;
+					}
+					break;
+				case 'A':
+					fputs(adjective[adjIndex], fout);
+					adjIndex++;
+					
+					if(adjIndex >= counterAdj){
+						adjIndex = 0;
+					}
+					break;
+				default:
+					fputc(line[i], fout);
+					break;
 			}
 		}
 	}
